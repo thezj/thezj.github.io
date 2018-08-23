@@ -118,13 +118,13 @@
 
                             var sRgbColor = String($('#color').val()).colorRgb();
                             console.log(sRgbColor = sRgbColor.replace('RGB', 'rgba'))
-                            console.log(sRgbColor = sRgbColor.replace(')', ',.31)'))
+                            console.log(sRgbColor = sRgbColor.replace(')', ',.81)'))
 
 
                             ctx.fillStyle = sRgbColor;
                             ctx.shadowOffsetX = 0;
                             ctx.shadowOffsetY = 0;
-                            ctx.shadowBlur = 10;
+                            ctx.shadowBlur = 15;
                             ctx.shadowColor = "rgba(255, 0, 0, 1)"
 
                             ctx.moveTo(ps.mouth_left_corner.x, ps.mouth_left_corner.y);

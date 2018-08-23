@@ -1,1 +1,168 @@
-<h3>欢迎光临，棒棒娃的博客sss<h3>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <input type="color" id='color' />
+    <form enctype="multipart/form-data">
+        <input type="file" name="image_file" onchange="loadFile(this.files[0])">
+        <input type="text" name="api_key" value='EIbeZluQy6yA4-jm09aFjkuwBzwHYgYJ'>
+        <input type="text" name="api_secret" value='4L_kMfeRHqXxdFUK3Qva4ZbqZtY7CKGL'>
+        <input type="number" name="return_landmark" value='2'>
+    </form>
+    <img id="imghead" style="" />
+    <canvas id="myCanvas" width="5200" height="6100" style="border:1px solid #000000;"></canvas>
+
+    <div id="hhh">sssss</div>
+    <script>
+        //十六进制颜色值域RGB格式颜色值之间的相互转换
+
+        //-------------------------------------
+        //十六进制颜色值的正则表达式
+        var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+        /*RGB颜色转换为16进制*/
+        String.prototype.colorHex = function () {
+            var that = this;
+            if (/^(rgb|RGB)/.test(that)) {
+                var aColor = that.replace(/(?:\(|\)|rgb|RGB)*/g, "").split(",");
+                var strHex = "#";
+                for (var i = 0; i < aColor.length; i++) {
+                    var hex = Number(aColor[i]).toString(16);
+                    if (hex === "0") {
+                        hex += hex;
+                    }
+                    strHex += hex;
+                }
+                if (strHex.length !== 7) {
+                    strHex = that;
+                }
+                return strHex;
+            } else if (reg.test(that)) {
+                var aNum = that.replace(/#/, "").split("");
+                if (aNum.length === 6) {
+                    return that;
+                } else if (aNum.length === 3) {
+                    var numHex = "#";
+                    for (var i = 0; i < aNum.length; i += 1) {
+                        numHex += (aNum[i] + aNum[i]);
+                    }
+                    return numHex;
+                }
+            } else {
+                return that;
+            }
+        };
+
+        //-------------------------------------------------
+
+        /*16进制颜色转为RGB格式*/
+        String.prototype.colorRgb = function () {
+            var sColor = this.toLowerCase();
+            if (sColor && reg.test(sColor)) {
+                if (sColor.length === 4) {
+                    var sColorNew = "#";
+                    for (var i = 1; i < 4; i += 1) {
+                        sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
+                    }
+                    sColor = sColorNew;
+                }
+                //处理六位的颜色值
+                var sColorChange = [];
+                for (var i = 1; i < 7; i += 2) {
+                    sColorChange.push(parseInt("0x" + sColor.slice(i, i + 2)));
+                }
+                return "RGB(" + sColorChange.join(",") + ")";
+            } else {
+                return sColor;
+            }
+        };
+
+        function loadFile(file) {
+            var img = document.getElementById('imghead');
+            var formdata = new FormData($('form')[0]);
+
+
+
+
+            $.ajax({
+                url: 'https://api-cn.faceplusplus.com/facepp/v3/detect',
+                type: 'POST',
+                datatype: 'json',
+                data: formdata,
+                cache: false,
+                traditional: true,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    let ps = data.faces[0].landmark
+                    var reader = new FileReader();
+                    //读取file完成之后加载
+                    reader.onload = function (evt) {
+                        img.src = evt.target.result;
+
+                        setTimeout(i => {
+                            var c = document.getElementById("myCanvas");
+                            var ctx = c.getContext("2d");
+                            console.log(document.getElementById("imghead"))
+                            ctx.drawImage(document.getElementById("imghead"), 0, 0, )
+
+                            ctx.beginPath();
+
+
+                            var sRgbColor = String($('#color').val()).colorRgb();
+                            console.log(sRgbColor = sRgbColor.replace('RGB', 'rgba'))
+                            console.log(sRgbColor = sRgbColor.replace(')', ',.31)'))
+
+
+                            ctx.fillStyle = sRgbColor;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+                            ctx.shadowBlur = 10;
+                            ctx.shadowColor = "rgba(255, 0, 0, 1)"
+
+                            ctx.moveTo(ps.mouth_left_corner.x, ps.mouth_left_corner.y);
+                            ctx.lineTo(ps.mouth_upper_lip_left_contour2.x, ps.mouth_upper_lip_left_contour2
+                                .y);
+                            ctx.lineTo(ps.mouth_upper_lip_left_contour1.x, ps.mouth_upper_lip_left_contour1
+                                .y);
+                            ctx.lineTo(ps.mouth_upper_lip_top.x, ps.mouth_upper_lip_top
+                                .y);
+                            ctx.lineTo(ps.mouth_upper_lip_right_contour1.x, ps.mouth_upper_lip_right_contour1
+                                .y);
+                            ctx.lineTo(ps.mouth_upper_lip_right_contour2.x, ps.mouth_upper_lip_right_contour2
+                                .y);
+                            ctx.lineTo(ps.mouth_right_corner.x, ps.mouth_right_corner.y);
+                            ctx.lineTo(ps.mouth_lower_lip_right_contour2.x, ps.mouth_lower_lip_right_contour2
+                                .y);
+                            ctx.lineTo(ps.mouth_lower_lip_right_contour3.x, ps.mouth_lower_lip_right_contour3
+                                .y);
+                            ctx.lineTo(ps.mouth_lower_lip_bottom.x, ps.mouth_lower_lip_bottom
+                                .y);
+                            ctx.lineTo(ps.mouth_lower_lip_left_contour3.x, ps.mouth_lower_lip_left_contour3
+                                .y);
+                            ctx.lineTo(ps.mouth_lower_lip_left_contour2.x, ps.mouth_lower_lip_left_contour2
+                                .y);
+                            ctx.fill();
+
+
+                        }, 111)
+                    }
+                    //开始读取file
+                    reader.readAsDataURL(file);
+
+
+                },
+                error: function () {}
+            });
+        }
+    </script>
+</body>
+
+</html>
